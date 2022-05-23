@@ -30,6 +30,7 @@ const User = require('../users/users-model')
 router.post('/register', checkUsernameFree, checkPasswordLength, (req, res, next) => {
   const { username, password } = req.body;
   const hash = bcrypt.hashSync(password, 8)
+
   User.add({ username, password: hash })
     .then(saved => {
       res.status(200).json(saved)
@@ -52,8 +53,16 @@ router.post('/register', checkUsernameFree, checkPasswordLength, (req, res, next
     "message": "Invalid credentials"
   }
  */
-  router.post('/login', checkUsernameExists, async (req, res, next) => {
-    console.log('login path connected')
+  router.post('/login', checkUsernameExists, (req, res, next) => {
+    const { password } = req.body;
+    if (bcrypt.compareSync(password, req.user.password)) {
+      // make it so the cookie is set on the client 
+      // make it so server stores a session with a sessionId
+      req.session.user = req.user
+      res.status(200).json({ message: `Welcome ${req.user.username}` })
+    } else {
+      next({ status: 401, message: "Invalid credentials" })
+    }
   })
 
 /**
@@ -71,8 +80,18 @@ router.post('/register', checkUsernameFree, checkPasswordLength, (req, res, next
     "message": "no session"
   }
  */
-  router.get('/logout', async (req, res, next) => {
-    console.log('logout path connected')
+  router.get('/logout', (req, res, next) => {
+    if (req.session.user) {
+      req.session.destroy(err => {
+        if (err) {
+          res.json({ message: 'issue logging out' })
+        } else {
+          res.status(200).json({ message: "logged out" })
+        }
+      })
+    } else {
+      res.status(200).json({ message: "no session" })
+    }
   })
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
