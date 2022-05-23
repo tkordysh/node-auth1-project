@@ -27,7 +27,9 @@ const Users = require("./users-model.js")
     "message": "You shall not pass!"
   }
  */
-
+  router.get('/', async (req, res, next) => {
+    console.log('get users path connected')
+  })
 
 // Don't forget to add the router to the `exports` object so it can be required in other modules
 module.exports = router;

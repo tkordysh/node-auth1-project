@@ -26,7 +26,9 @@ const { checkUsernameFree, checkUsernameExists, checkPasswordLength } = require(
     "message": "Password must be longer than 3 chars"
   }
  */
-
+router.post('/register', async (req, res, next) => {
+  console.log('register path connected')
+})
 
 /**
   2 [POST] /api/auth/login { "username": "sue", "password": "1234" }
@@ -43,7 +45,9 @@ const { checkUsernameFree, checkUsernameExists, checkPasswordLength } = require(
     "message": "Invalid credentials"
   }
  */
-
+  router.post('/login', async (req, res, next) => {
+    console.log('login path connected')
+  })
 
 /**
   3 [GET] /api/auth/logout
@@ -60,7 +64,9 @@ const { checkUsernameFree, checkUsernameExists, checkPasswordLength } = require(
     "message": "no session"
   }
  */
-
+  router.get('/logout', async (req, res, next) => {
+    console.log('logout path connected')
+  })
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
 module.exports = router;
