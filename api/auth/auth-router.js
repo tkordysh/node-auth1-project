@@ -3,6 +3,7 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const { checkUsernameFree, checkUsernameExists, checkPasswordLength } = require('../auth/auth-middleware')
+const User = require('../users/users-model')
 
 /**
   1 [POST] /api/auth/register { "username": "sue", "password": "1234" }
@@ -26,8 +27,14 @@ const { checkUsernameFree, checkUsernameExists, checkPasswordLength } = require(
     "message": "Password must be longer than 3 chars"
   }
  */
-router.post('/register', async (req, res, next) => {
-  console.log('register path connected')
+router.post('/register', checkUsernameFree, checkPasswordLength, (req, res, next) => {
+  const { username, password } = req.body;
+  const hash = bcrypt.hashSync(password, 8)
+  User.add({ username, password: hash })
+    .then(saved => {
+      res.status(200).json(saved)
+    })
+    .catch(next)
 })
 
 /**
@@ -45,7 +52,7 @@ router.post('/register', async (req, res, next) => {
     "message": "Invalid credentials"
   }
  */
-  router.post('/login', async (req, res, next) => {
+  router.post('/login', checkUsernameExists, async (req, res, next) => {
     console.log('login path connected')
   })
 
